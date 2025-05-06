@@ -2,26 +2,48 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     // Enable Bootstrap tooltips everywhere
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
+    try {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        if (tooltipTriggerList.length > 0 && typeof bootstrap !== 'undefined') {
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+    } catch (error) {
+        console.log('Tooltip initialization skipped:', error);
+    }
 
     // Enable Bootstrap popovers
-    const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-    popoverTriggerList.map(function (popoverTriggerEl) {
-        return new bootstrap.Popover(popoverTriggerEl);
-    });
+    try {
+        const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+        if (popoverTriggerList.length > 0 && typeof bootstrap !== 'undefined') {
+            popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        }
+    } catch (error) {
+        console.log('Popover initialization skipped:', error);
+    }
 
     // Handle file input customization
-    const fileInputs = document.querySelectorAll('.custom-file-input');
-    fileInputs.forEach(input => {
-        input.addEventListener('change', function(e) {
-            const fileName = this.files[0].name;
-            const label = this.nextElementSibling;
-            label.textContent = fileName;
-        });
-    });
+    try {
+        const fileInputs = document.querySelectorAll('.custom-file-input');
+        if (fileInputs.length > 0) {
+            fileInputs.forEach(input => {
+                input.addEventListener('change', function(e) {
+                    if (this.files && this.files.length > 0) {
+                        const fileName = this.files[0].name;
+                        const label = this.nextElementSibling;
+                        if (label) {
+                            label.textContent = fileName;
+                        }
+                    }
+                });
+            });
+        }
+    } catch (error) {
+        console.log('File input handling skipped:', error);
+    }
 
     // Password strength meter
     const passwordInput = document.getElementById('password');
@@ -61,35 +83,55 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Character counter for textareas
-    const textareas = document.querySelectorAll('textarea[maxlength]');
-    textareas.forEach(textarea => {
-        const counter = document.createElement('small');
-        counter.className = 'form-text text-muted character-counter';
-        counter.innerHTML = `0/${textarea.maxLength} characters`;
-        textarea.parentNode.appendChild(counter);
+    try {
+        const textareas = document.querySelectorAll('textarea[maxlength]');
+        if (textareas.length > 0) {
+            textareas.forEach(textarea => {
+                if (textarea && textarea.parentNode) {
+                    const counter = document.createElement('small');
+                    counter.className = 'form-text text-muted character-counter';
+                    counter.innerHTML = `0/${textarea.maxLength || 0} characters`;
+                    textarea.parentNode.appendChild(counter);
 
-        textarea.addEventListener('input', function() {
-            counter.innerHTML = `${this.value.length}/${this.maxLength} characters`;
-        });
-    });
+                    textarea.addEventListener('input', function() {
+                        counter.innerHTML = `${this.value.length}/${this.maxLength || 0} characters`;
+                    });
+                }
+            });
+        }
+    } catch (error) {
+        console.log('Textarea character counter skipped:', error);
+    }
 
     // Handle job application status updates
-    const statusForm = document.getElementById('application-status-form');
-    if (statusForm) {
-        const statusSelect = document.getElementById('status-select');
-        statusSelect.addEventListener('change', function() {
-            statusForm.submit();
-        });
+    try {
+        const statusForm = document.getElementById('application-status-form');
+        if (statusForm) {
+            const statusSelect = document.getElementById('status-select');
+            if (statusSelect) {
+                statusSelect.addEventListener('change', function() {
+                    statusForm.submit();
+                });
+            }
+        }
+    } catch (error) {
+        console.log('Status form handling skipped:', error);
     }
 
     // Date picker enhancement
-    const datePickers = document.querySelectorAll('input[type="date"]');
-    datePickers.forEach(picker => {
-        // Add min attribute to prevent selecting dates in the past for closing dates
-        if (picker.id === 'closing_date') {
-            picker.min = new Date().toISOString().split('T')[0];
+    try {
+        const datePickers = document.querySelectorAll('input[type="date"]');
+        if (datePickers.length > 0) {
+            datePickers.forEach(picker => {
+                // Add min attribute to prevent selecting dates in the past for closing dates
+                if (picker && picker.id === 'closing_date') {
+                    picker.min = new Date().toISOString().split('T')[0];
+                }
+            });
         }
-    });
+    } catch (error) {
+        console.log('Date picker handling skipped:', error);
+    }
 });
 
 // Function to calculate password strength
