@@ -60,8 +60,23 @@ def create_app():
     # Add a route to serve files from uploads directory (as a backup if static doesn't work)
     @app.route('/files/<path:filename>')
     def uploaded_file(filename):
-        from flask import send_from_directory
-        return send_from_directory(os.path.join(app.static_folder, 'uploads'), filename)
+        from flask import send_from_directory, abort
+        # If the filename has "uploads/" at the beginning, remove it
+        if filename.startswith('uploads/'):
+            filename = filename[8:]
+        
+        # Determine the base directory and the file path
+        base_dir = app.static_folder
+        file_path = os.path.join(base_dir, 'uploads', filename)
+        
+        if os.path.exists(file_path):
+            # Figure out which subdirectory this file is in
+            dir_name = os.path.dirname(filename)
+            file_name = os.path.basename(filename)
+            return send_from_directory(os.path.join(base_dir, 'uploads', dir_name), file_name)
+        else:
+            app.logger.error(f"File not found: {file_path}")
+            abort(404)
     
     # Register blueprints
     from routes.auth import auth_bp
