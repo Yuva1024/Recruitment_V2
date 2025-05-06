@@ -57,25 +57,42 @@ def create_app():
     os.makedirs(os.path.join(app.static_folder, 'uploads', 'resumes'), exist_ok=True)
     os.makedirs(os.path.join(app.static_folder, 'uploads', 'logos'), exist_ok=True)
     
-    # Add a route to serve files from uploads directory (as a backup if static doesn't work)
-    @app.route('/files/<path:filename>')
-    def uploaded_file(filename):
-        from flask import send_from_directory, abort
-        # If the filename has "uploads/" at the beginning, remove it
+    # Simple direct file serving route for resumes and uploaded files
+    @app.route('/uploads/<path:filename>')
+    def serve_upload(filename):
+        from flask import send_from_directory, abort, current_app
+        import logging
+        
+        # Security check - only allow access to files in the uploads directory
+        if '..' in filename:
+            abort(403)  # Forbidden
+        
+        # Debug logs
+        logging.info(f"Attempting to serve file: {filename}")
+        
+        # Path construction - handle 'uploads/' prefix if present 
         if filename.startswith('uploads/'):
-            filename = filename[8:]
+            filename = filename[8:]  # Remove 'uploads/' prefix
         
-        # Determine the base directory and the file path
-        base_dir = app.static_folder
-        file_path = os.path.join(base_dir, 'uploads', filename)
+        file_path = os.path.join(current_app.static_folder, 'uploads', filename)
+        logging.info(f"Full file path: {file_path}")
+        logging.info(f"File exists: {os.path.exists(file_path)}")
         
-        if os.path.exists(file_path):
-            # Figure out which subdirectory this file is in
-            dir_name = os.path.dirname(filename)
-            file_name = os.path.basename(filename)
-            return send_from_directory(os.path.join(base_dir, 'uploads', dir_name), file_name)
-        else:
-            app.logger.error(f"File not found: {file_path}")
+        try:
+            directory = os.path.dirname(os.path.join(current_app.static_folder, 'uploads', filename))
+            base_filename = os.path.basename(filename)
+            logging.info(f"Serving from directory: {directory}, file: {base_filename}")
+            
+            if os.path.exists(file_path):
+                return send_from_directory(
+                    os.path.dirname(file_path),
+                    os.path.basename(file_path)
+                )
+            else:
+                current_app.logger.error(f"File not found: {file_path}")
+                abort(404)
+        except Exception as e:
+            current_app.logger.error(f"Error serving file {filename}: {str(e)}")
             abort(404)
     
     # Register blueprints
