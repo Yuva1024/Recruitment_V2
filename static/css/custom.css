@@ -20,7 +20,7 @@ body {
 
 /* Section background adjustments - only changing background color */
 .py-5.bg-light, section.bg-light {
-    background-color: #000000 !important;
+    background-color: #f0f0f0 !important;
 }
 
 /* Job card styles */
