@@ -30,9 +30,13 @@ def register():
             )
             db.session.add(profile)
         elif user.role == Role.EMPLOYER:
+            # Create employer profile with required fields
             profile = EmployerProfile(
                 user=user,
-                company_name=f"{form.first_name.data} {form.last_name.data}'s Company"  # Temporary name
+                company_name=f"{form.first_name.data} {form.last_name.data}'s Company",  # Temporary name
+                company_description="Please update your company description",  # Default placeholder
+                location="Please update your location",  # Default placeholder
+                contact_email=form.email.data  # Use the registration email
             )
             db.session.add(profile)
         

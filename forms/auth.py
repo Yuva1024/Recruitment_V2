@@ -25,7 +25,7 @@ class RegistrationForm(FlaskForm):
     ])
     role = SelectField('I am a', choices=[
         (Role.CANDIDATE, 'Job Seeker'),
-        (Role.EMPLOYER, 'Employer')
+        (Role.EMPLOYER, 'Recruiter')
     ], validators=[DataRequired()])
     submit = SubmitField('Register')
     
