@@ -52,8 +52,16 @@ def create_app():
             return ""
         return markupsafe.Markup(s.replace('\n', '<br>'))
     
-    # Create upload directory if it doesn't exist
+    # Create upload directories if they don't exist
     os.makedirs(os.path.join(app.static_folder, 'uploads'), exist_ok=True)
+    os.makedirs(os.path.join(app.static_folder, 'uploads', 'resumes'), exist_ok=True)
+    os.makedirs(os.path.join(app.static_folder, 'uploads', 'logos'), exist_ok=True)
+    
+    # Add a route to serve files from uploads directory (as a backup if static doesn't work)
+    @app.route('/files/<path:filename>')
+    def uploaded_file(filename):
+        from flask import send_from_directory
+        return send_from_directory(os.path.join(app.static_folder, 'uploads'), filename)
     
     # Register blueprints
     from routes.auth import auth_bp
