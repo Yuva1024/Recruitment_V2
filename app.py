@@ -7,6 +7,8 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
+import jinja2
+import markupsafe
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -42,6 +44,13 @@ def create_app():
     # Configure login
     login_manager.login_view = 'auth.login'
     login_manager.login_message_category = 'info'
+    
+    # Add custom jinja2 filters
+    @app.template_filter('nl2br')
+    def nl2br_filter(s):
+        if not s:
+            return ""
+        return markupsafe.Markup(s.replace('\n', '<br>'))
     
     # Create upload directory if it doesn't exist
     os.makedirs(os.path.join(app.static_folder, 'uploads'), exist_ok=True)
