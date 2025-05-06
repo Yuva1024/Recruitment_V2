@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
+from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app
 from flask_login import login_required, current_user
 from sqlalchemy import or_
 from app import db
-from models import Job, User, Role, Application
+from models import Job, User, Role, Application, EmployerProfile
 from forms.jobs import JobPostForm, JobSearchForm
+import logging
 
 jobs_bp = Blueprint('jobs', __name__, url_prefix='/jobs')
 
@@ -91,31 +92,45 @@ def create():
     form = JobPostForm()
     
     if form.validate_on_submit():
-        job = Job(
-            title=form.title.data,
-            company=form.company.data,
-            location=form.location.data,
-            description=form.description.data,
-            requirements=form.requirements.data,
-            salary_range=form.salary_range.data,
-            job_type=form.job_type.data,
-            experience_level=form.experience_level.data,
-            education_level=form.education_level.data,
-            industry=form.industry.data,
-            is_remote=form.is_remote.data,
-            closing_date=form.closing_date.data,
-            employer_id=current_user.id
-        )
-        
-        db.session.add(job)
-        
         try:
+            # Pre-fetch employer profile to ensure it exists
+            employer_profile = EmployerProfile.query.filter_by(user_id=current_user.id).first()
+            if not employer_profile:
+                flash('Please complete your employer profile before posting a job', 'warning')
+                return redirect(url_for('profiles.edit_employer_profile'))
+                
+            # Use profile company name if the form field is empty
+            company_name = form.company.data
+            if not company_name and employer_profile and employer_profile.company_name:
+                company_name = employer_profile.company_name
+            
+            # Create job object with validated data
+            job = Job(
+                title=form.title.data,
+                company=company_name,
+                location=form.location.data,
+                description=form.description.data,
+                requirements=form.requirements.data,
+                salary_range=form.salary_range.data,
+                job_type=form.job_type.data,
+                experience_level=form.experience_level.data,
+                education_level=form.education_level.data,
+                industry=form.industry.data,
+                is_remote=form.is_remote.data,
+                closing_date=form.closing_date.data,
+                employer_id=current_user.id
+            )
+            
+            # Add to session and commit
+            db.session.add(job)
             db.session.commit()
+            
             flash('Job posted successfully!', 'success')
             return redirect(url_for('jobs.show', job_id=job.id))
         except Exception as e:
             db.session.rollback()
-            flash(f'Error posting job: {str(e)}', 'danger')
+            logging.error(f"Error posting job: {str(e)}")
+            flash(f'Error posting job. Please try again or contact support.', 'danger')
     
     return render_template('jobs/create.html', form=form, title='Post a Job')
 
@@ -131,26 +146,41 @@ def edit(job_id):
     form = JobPostForm()
     
     if form.validate_on_submit():
-        job.title = form.title.data
-        job.company = form.company.data
-        job.location = form.location.data
-        job.description = form.description.data
-        job.requirements = form.requirements.data
-        job.salary_range = form.salary_range.data
-        job.job_type = form.job_type.data
-        job.experience_level = form.experience_level.data
-        job.education_level = form.education_level.data
-        job.industry = form.industry.data
-        job.is_remote = form.is_remote.data
-        job.closing_date = form.closing_date.data
-        
         try:
+            # Get the employer profile to use company name if needed
+            employer_profile = None
+            if current_user.id == job.employer_id:
+                employer_profile = EmployerProfile.query.filter_by(user_id=current_user.id).first()
+                
+            # Use profile company name if the form field is empty
+            company_name = form.company.data
+            if not company_name and employer_profile and employer_profile.company_name:
+                company_name = employer_profile.company_name
+            else:
+                company_name = form.company.data
+                
+            # Update job with validated data
+            job.title = form.title.data
+            job.company = company_name
+            job.location = form.location.data
+            job.description = form.description.data
+            job.requirements = form.requirements.data
+            job.salary_range = form.salary_range.data
+            job.job_type = form.job_type.data
+            job.experience_level = form.experience_level.data
+            job.education_level = form.education_level.data
+            job.industry = form.industry.data
+            job.is_remote = form.is_remote.data
+            job.closing_date = form.closing_date.data
+            
+            # Commit changes
             db.session.commit()
             flash('Job updated successfully!', 'success')
             return redirect(url_for('jobs.show', job_id=job.id))
         except Exception as e:
             db.session.rollback()
-            flash(f'Error updating job: {str(e)}', 'danger')
+            logging.error(f"Error updating job: {str(e)}")
+            flash(f'Error updating job. Please try again or contact support.', 'danger')
     
     elif request.method == 'GET':
         # Populate form with current job data
@@ -184,7 +214,8 @@ def delete(job_id):
         flash('Job listing deleted successfully', 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'Error deleting job: {str(e)}', 'danger')
+        logging.error(f"Error deleting job: {str(e)}")
+        flash(f'Error deleting job. Please try again or contact support.', 'danger')
     
     if current_user.role == Role.ADMIN:
         return redirect(url_for('admin.jobs'))
@@ -208,6 +239,7 @@ def toggle_status(job_id):
         flash(f'Job listing is now {status}', 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'Error updating job status: {str(e)}', 'danger')
+        logging.error(f"Error updating job status: {str(e)}")
+        flash(f'Error updating job status. Please try again or contact support.', 'danger')
     
     return redirect(url_for('jobs.show', job_id=job.id))
