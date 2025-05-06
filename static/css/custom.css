@@ -8,8 +8,6 @@ html {
 
 body {
     margin-bottom: 60px; /* Margin bottom by footer height */
-    background-color: #000000;
-    color: #ffffff;
 }
 
 .footer {
@@ -18,22 +16,11 @@ body {
     width: 100%;
     height: 60px; /* Set the fixed height of the footer here */
     line-height: 60px; /* Vertically center the text there */
-    background-color: #000000;
 }
 
-/* Text color adjustments */
-h1, h2, h3, h4, h5, h6, .lead, .card-title, .card-subtitle, .card-text {
-    color: #ffffff;
-}
-
-/* Card and section background adjustments */
-.card, .bg-light {
-    background-color: #121212 !important;
-    color: #ffffff;
-}
-
-.hero-section {
-    background-color: #121212 !important;
+/* Section background adjustments - only changing background color */
+.py-5.bg-light, section.bg-light {
+    background-color: #000000 !important;
 }
 
 /* Job card styles */
@@ -100,23 +87,13 @@ h1, h2, h3, h4, h5, h6, .lead, .card-title, .card-subtitle, .card-text {
 .form-control:focus, .form-select:focus {
     border-color: var(--bs-primary);
     box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
-    background-color: #121212;
-    color: #ffffff;
-}
-
-.form-control, .form-select {
-    background-color: #121212;
-    color: #ffffff;
-    border-color: #333333;
 }
 
 /* Search form */
 .search-form {
-    background-color: #121212;
     padding: 20px;
     border-radius: 10px;
     margin-bottom: 30px;
-    color: #ffffff;
 }
 
 /* Pagination improvements */
@@ -134,23 +111,9 @@ h1, h2, h3, h4, h5, h6, .lead, .card-title, .card-subtitle, .card-text {
     font-weight: bold;
 }
 
-.navbar {
-    background-color: #000000 !important;
-}
-
-.navbar-dark .navbar-nav .nav-link {
-    color: #ffffff;
-}
-
-.navbar-dark .navbar-nav .nav-link:hover {
-    color: #0d6efd;
-}
-
 /* Hero section */
 .hero-section {
     padding: 5rem 0;
-    background-color: #000000 !important;
-    color: #ffffff !important;
 }
 
 /* Feature section */
@@ -158,21 +121,7 @@ h1, h2, h3, h4, h5, h6, .lead, .card-title, .card-subtitle, .card-text {
     width: 4rem;
     height: 4rem;
     border-radius: 0.75rem;
-    background-color: #0d6efd !important;
-    color: white !important;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.py-5.bg-light {
-    background-color: #000000 !important;
-}
-
-.feature-section h2, .feature-section h3, .feature-section p {
-    color: #ffffff !important;
-}
-
-.lead {
-    color: #ffffff !important;
 }
