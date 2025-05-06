@@ -8,6 +8,7 @@ html {
 
 body {
     margin-bottom: 60px; /* Margin bottom by footer height */
+    background-color: #000000;
 }
 
 .footer {
@@ -19,7 +20,7 @@ body {
 }
 
 /* Section background adjustments - only changing background color */
-.py-5.bg-light, section.bg-light {
+.py-5.bg-light, section.bg-light, .bg-light {
     background-color: #000000 !important;
 }
 
