@@ -23,10 +23,17 @@ def register():
         
         # Create corresponding profile based on role
         if user.role == Role.CANDIDATE:
-            profile = CandidateProfile(user=user)
+            profile = CandidateProfile(
+                user=user,
+                first_name=form.first_name.data,
+                last_name=form.last_name.data
+            )
             db.session.add(profile)
         elif user.role == Role.EMPLOYER:
-            profile = EmployerProfile(user=user)
+            profile = EmployerProfile(
+                user=user,
+                company_name=f"{form.first_name.data} {form.last_name.data}'s Company"  # Temporary name
+            )
             db.session.add(profile)
         
         db.session.add(user)
