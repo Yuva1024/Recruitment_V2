@@ -27,6 +27,9 @@ def save_file(file, folder='uploads'):
         target_dir = os.path.join(current_app.static_folder, folder)
         os.makedirs(target_dir, exist_ok=True)
         
+        # Create parent directories if they don't exist
+        os.makedirs(os.path.dirname(os.path.join(target_dir, unique_filename)), exist_ok=True)
+        
         # Save the file
         file_path = os.path.join(target_dir, unique_filename)
         file.save(file_path)
