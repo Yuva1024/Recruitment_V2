@@ -1,0 +1,143 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1 class="mb-4">Job Listings</h1>
+
+<!-- Search and Filter Form -->
+<div class="card search-form mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('jobs.index') }}" id="job-filter-form">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    {{ form.keyword.label(class="form-label") }}
+                    {{ form.keyword(class="form-control") }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.location.label(class="form-label") }}
+                    {{ form.location(class="form-control") }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.job_type.label(class="form-label") }}
+                    {{ form.job_type(class="form-select") }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.experience_level.label(class="form-label") }}
+                    {{ form.experience_level(class="form-select") }}
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <div class="form-check">
+                        {{ form.remote(class="form-check-input") }}
+                        {{ form.remote.label(class="form-check-label") }}
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    {{ form.submit(class="btn btn-primary w-100") }}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Job Listings -->
+<div class="row">
+    {% if jobs.items %}
+        {% for job in jobs.items %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 job-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ job.title }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ job.company }}</h6>
+                        <div class="mb-3">
+                            <span class="badge bg-primary">{{ job.job_type }}</span>
+                            {% if job.is_remote %}
+                                <span class="badge bg-info ms-1">Remote</span>
+                            {% endif %}
+                            <span class="badge bg-secondary ms-1">{{ job.experience_level }}</span>
+                        </div>
+                        <p class="card-text mb-2">
+                            <i class="fas fa-map-marker-alt me-2"></i>{{ job.location }}
+                        </p>
+                        {% if job.salary_range %}
+                            <p class="card-text mb-2">
+                                <i class="fas fa-money-bill-wave me-2"></i>{{ job.salary_range }}
+                            </p>
+                        {% endif %}
+                        <p class="card-text">
+                            {{ job.description|truncate(150) }}
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('jobs.show', job_id=job.id) }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                        <small class="text-muted">Posted {{ job.created_at.strftime('%b %d, %Y') }}</small>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No jobs found matching your criteria. Try adjusting your search filters.
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Pagination -->
+{% if jobs.pages > 1 %}
+    <nav aria-label="Job listing pagination">
+        <ul class="pagination justify-content-center">
+            {% if jobs.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('jobs.index', page=jobs.prev_num, keyword=request.args.get('keyword', ''), location=request.args.get('location', ''), job_type=request.args.get('job_type', ''), experience_level=request.args.get('experience_level', ''), remote=request.args.get('remote', 0)) }}">
+                        Previous
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+            {% endif %}
+
+            {% for page_num in jobs.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if page_num %}
+                    {% if page_num == jobs.page %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('jobs.index', page=page_num, keyword=request.args.get('keyword', ''), location=request.args.get('location', ''), job_type=request.args.get('job_type', ''), experience_level=request.args.get('experience_level', ''), remote=request.args.get('remote', 0)) }}">
+                                {{ page_num }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">…</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if jobs.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('jobs.index', page=jobs.next_num, keyword=request.args.get('keyword', ''), location=request.args.get('location', ''), job_type=request.args.get('job_type', ''), experience_level=request.args.get('experience_level', ''), remote=request.args.get('remote', 0)) }}">
+                        Next
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
+
+{% if current_user.is_authenticated and current_user.is_employer() %}
+    <div class="text-center mt-4">
+        <a href="{{ url_for('jobs.create') }}" class="btn btn-success">
+            <i class="fas fa-plus-circle me-2"></i>Post a New Job
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

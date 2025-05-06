@@ -1,0 +1,176 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h2 class="mb-0">Manage Applications</h2>
+    </div>
+    <div class="card-body">
+        <!-- Filter and Sort Options -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <select name="status" class="form-select" onchange="this.form.submit()">
+                            <option value="" {% if not status_filter %}selected{% endif %}>All Statuses</option>
+                            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="reviewed" {% if status_filter == 'reviewed' %}selected{% endif %}>Reviewed</option>
+                            <option value="interviewed" {% if status_filter == 'interviewed' %}selected{% endif %}>Interviewed</option>
+                            <option value="offered" {% if status_filter == 'offered' %}selected{% endif %}>Offered</option>
+                            <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select name="sort_by" class="form-select" onchange="this.form.submit()">
+                            <option value="created_at" {% if sort_by == 'created_at' %}selected{% endif %}>Sort by Date</option>
+                            <option value="status" {% if sort_by == 'status' %}selected{% endif %}>Sort by Status</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select name="order" class="form-select" onchange="this.form.submit()">
+                            <option value="desc" {% if order == 'desc' %}selected{% endif %}>Descending</option>
+                            <option value="asc" {% if order == 'asc' %}selected{% endif %}>Ascending</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Applications Table -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>Applicant</th>
+                        <th>Applied On</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for application in applications.items %}
+                        <tr>
+                            <td>{{ application_jobs[application.id].title }}</td>
+                            <td>{{ application_jobs[application.id].company }}</td>
+                            <td>{{ application.candidate.username }}</td>
+                            <td>{{ application.created_at.strftime('%b %d, %Y') }}</td>
+                            <td>
+                                <span class="badge status-{{ application.status }}">
+                                    {{ application.status.capitalize() }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('applications.show', application_id=application.id) }}" class="btn btn-sm btn-outline-primary" title="View Application">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('jobs.show', job_id=application.job_id) }}" class="btn btn-sm btn-outline-secondary" title="View Job">
+                                        <i class="fas fa-briefcase"></i>
+                                    </a>
+                                    <a href="{{ url_for('profiles.view_profile', user_id=application.candidate_id) }}" class="btn btn-sm btn-outline-info" title="View Candidate">
+                                        <i class="fas fa-user"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">No applications found</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if applications.pages > 1 %}
+            <nav aria-label="Application list pagination">
+                <ul class="pagination justify-content-center">
+                    {% if applications.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.applications', page=applications.prev_num, sort_by=sort_by, order=order, status=status_filter) }}">
+                                Previous
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Previous</span>
+                        </li>
+                    {% endif %}
+
+                    {% for page_num in applications.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            {% if page_num == applications.page %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.applications', page=page_num, sort_by=sort_by, order=order, status=status_filter) }}">
+                                        {{ page_num }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">…</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if applications.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.applications', page=applications.next_num, sort_by=sort_by, order=order, status=status_filter) }}">
+                                Next
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Next</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Application Status Legend -->
+<div class="card mt-4">
+    <div class="card-header bg-secondary">
+        <h5 class="mb-0">Application Status Guide</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 mb-2">
+                <span class="badge status-pending me-2">Pending</span>
+                Application submitted and awaiting review
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="badge status-reviewed me-2">Reviewed</span>
+                Application has been reviewed
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="badge status-interviewed me-2">Interviewed</span>
+                Candidate has been interviewed
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="badge status-offered me-2">Offered</span>
+                Job offer extended to candidate
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="badge status-rejected me-2">Rejected</span>
+                Application not selected for this position
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

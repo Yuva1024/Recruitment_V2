@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('profiles.candidate_dashboard') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+</div>
+
+<h1 class="mb-4">My Applications</h1>
+
+{% if applications %}
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Applied On</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applications %}
+                            <tr>
+                                <td>{{ application.job.title }}</td>
+                                <td>{{ application.job.company }}</td>
+                                <td>{{ application.created_at.strftime('%b %d, %Y') }}</td>
+                                <td>
+                                    <span class="badge status-{{ application.status }}">
+                                        {{ application.status.capitalize() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('applications.show', application_id=application.id) }}" class="btn btn-sm btn-outline-primary" title="View Application">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('jobs.show', job_id=application.job_id) }}" class="btn btn-sm btn-outline-secondary" title="View Job">
+                                            <i class="fas fa-briefcase"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Application Status Legend -->
+    <div class="card mt-4">
+        <div class="card-header bg-secondary">
+            <h5 class="mb-0">Application Status Guide</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-2">
+                    <span class="badge status-pending me-2">Pending</span>
+                    Your application has been submitted and is awaiting review
+                </div>
+                <div class="col-md-4 mb-2">
+                    <span class="badge status-reviewed me-2">Reviewed</span>
+                    Your application has been reviewed by the employer
+                </div>
+                <div class="col-md-4 mb-2">
+                    <span class="badge status-interviewed me-2">Interviewed</span>
+                    You've been interviewed for this position
+                </div>
+                <div class="col-md-4 mb-2">
+                    <span class="badge status-offered me-2">Offered</span>
+                    Congratulations! You've received a job offer
+                </div>
+                <div class="col-md-4 mb-2">
+                    <span class="badge status-rejected me-2">Rejected</span>
+                    Your application was not selected for this position
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <h4 class="alert-heading">No Applications Yet!</h4>
+        <p>You haven't applied to any jobs yet. Start your job search now to find opportunities that match your skills and experience.</p>
+        <hr>
+        <a href="{{ url_for('jobs.index') }}" class="btn btn-primary">Browse Available Jobs</a>
+    </div>
+{% endif %}
+
+<!-- Job Search Call to Action -->
+<div class="card text-center mt-4">
+    <div class="card-body py-4">
+        <h5 class="card-title">Looking for more opportunities?</h5>
+        <p class="card-text">Browse our job listings to find your next career move.</p>
+        <a href="{{ url_for('jobs.index') }}" class="btn btn-primary">Search Jobs</a>
+    </div>
+</div>
+{% endblock %}

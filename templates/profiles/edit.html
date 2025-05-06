@@ -1,0 +1,339 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="mb-4">
+    {% if profile_type == 'candidate' %}
+        <a href="{{ url_for('profiles.candidate_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    {% else %}
+        <a href="{{ url_for('profiles.employer_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h2 class="mb-0">
+            {% if profile_type == 'candidate' %}
+                Edit Candidate Profile
+            {% else %}
+                Edit Company Profile
+            {% endif %}
+        </h2>
+    </div>
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            
+            {% if profile_type == 'candidate' %}
+                <!-- Candidate Profile Form -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        {{ form.first_name.label(class="form-label") }}
+                        {% if form.first_name.errors %}
+                            {{ form.first_name(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.first_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.first_name(class="form-control") }}
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.last_name.label(class="form-label") }}
+                        {% if form.last_name.errors %}
+                            {{ form.last_name(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.last_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.last_name(class="form-control") }}
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        {{ form.phone.label(class="form-label") }}
+                        {% if form.phone.errors %}
+                            {{ form.phone(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.phone.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.phone(class="form-control") }}
+                        {% endif %}
+                        <small class="form-text text-muted">Format: +1 (123) 456-7890</small>
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.professional_title.label(class="form-label") }}
+                        {% if form.professional_title.errors %}
+                            {{ form.professional_title(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.professional_title.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.professional_title(class="form-control") }}
+                        {% endif %}
+                        <small class="form-text text-muted">E.g., "Senior Software Engineer" or "Marketing Specialist"</small>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.address.label(class="form-label") }}
+                    {% if form.address.errors %}
+                        {{ form.address(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.address.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.address(class="form-control") }}
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.summary.label(class="form-label") }}
+                    {% if form.summary.errors %}
+                        {{ form.summary(class="form-control is-invalid", rows=4) }}
+                        <div class="invalid-feedback">
+                            {% for error in form.summary.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.summary(class="form-control", rows=4) }}
+                    {% endif %}
+                    <small class="form-text text-muted">A brief overview of your professional background and career goals</small>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.skills.label(class="form-label") }}
+                    {% if form.skills.errors %}
+                        {{ form.skills(class="form-control is-invalid", rows=4) }}
+                        <div class="invalid-feedback">
+                            {% for error in form.skills.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.skills(class="form-control", rows=4) }}
+                    {% endif %}
+                    <small class="form-text text-muted">List your key skills, separated by commas or new lines</small>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.experience.label(class="form-label") }}
+                    {% if form.experience.errors %}
+                        {{ form.experience(class="form-control is-invalid", rows=6) }}
+                        <div class="invalid-feedback">
+                            {% for error in form.experience.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.experience(class="form-control", rows=6) }}
+                    {% endif %}
+                    <small class="form-text text-muted">Detail your work history, including company names, positions, dates, and responsibilities</small>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.education.label(class="form-label") }}
+                    {% if form.education.errors %}
+                        {{ form.education(class="form-control is-invalid", rows=4) }}
+                        <div class="invalid-feedback">
+                            {% for error in form.education.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.education(class="form-control", rows=4) }}
+                    {% endif %}
+                    <small class="form-text text-muted">List your educational background, including institutions, degrees, and graduation dates</small>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.resume.label(class="form-label") }}
+                    <div class="input-group">
+                        {{ form.resume(class="form-control custom-file-input") }}
+                    </div>
+                    {% if form.resume.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.resume.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <small class="form-text text-muted">Upload your resume (PDF, DOC, DOCX, or TXT files only, max 16MB)</small>
+                </div>
+                
+            {% else %}
+                <!-- Employer Profile Form -->
+                <div class="mb-3">
+                    {{ form.company_name.label(class="form-label") }}
+                    {% if form.company_name.errors %}
+                        {{ form.company_name(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.company_name.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.company_name(class="form-control") }}
+                    {% endif %}
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        {{ form.company_website.label(class="form-label") }}
+                        {% if form.company_website.errors %}
+                            {{ form.company_website(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.company_website.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.company_website(class="form-control") }}
+                        {% endif %}
+                        <small class="form-text text-muted">e.g., https://www.example.com</small>
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.industry.label(class="form-label") }}
+                        {% if form.industry.errors %}
+                            {{ form.industry(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.industry.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.industry(class="form-control") }}
+                        {% endif %}
+                        <small class="form-text text-muted">e.g., "Technology", "Healthcare", "Finance"</small>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        {{ form.company_size.label(class="form-label") }}
+                        {% if form.company_size.errors %}
+                            {{ form.company_size(class="form-select is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.company_size.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.company_size(class="form-select") }}
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.founded_year.label(class="form-label") }}
+                        {% if form.founded_year.errors %}
+                            {{ form.founded_year(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.founded_year.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.founded_year(class="form-control") }}
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.location.label(class="form-label") }}
+                    {% if form.location.errors %}
+                        {{ form.location(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.location.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.location(class="form-control") }}
+                    {% endif %}
+                    <small class="form-text text-muted">Company headquarters location</small>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        {{ form.contact_email.label(class="form-label") }}
+                        {% if form.contact_email.errors %}
+                            {{ form.contact_email(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.contact_email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.contact_email(class="form-control") }}
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.contact_phone.label(class="form-label") }}
+                        {% if form.contact_phone.errors %}
+                            {{ form.contact_phone(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.contact_phone.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.contact_phone(class="form-control") }}
+                        {% endif %}
+                        <small class="form-text text-muted">Format: +1 (123) 456-7890</small>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.company_description.label(class="form-label") }}
+                    {% if form.company_description.errors %}
+                        {{ form.company_description(class="form-control is-invalid", rows=6) }}
+                        <div class="invalid-feedback">
+                            {% for error in form.company_description.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.company_description(class="form-control", rows=6) }}
+                    {% endif %}
+                    <small class="form-text text-muted">Provide a detailed description of your company, its mission, values, and culture</small>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.logo.label(class="form-label") }}
+                    <div class="input-group">
+                        {{ form.logo(class="form-control custom-file-input") }}
+                    </div>
+                    {% if form.logo.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.logo.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <small class="form-text text-muted">Upload your company logo (JPG, JPEG, PNG, or GIF files only, max 16MB)</small>
+                </div>
+            {% endif %}
+            
+            <div class="d-grid mt-4">
+                {{ form.submit(class="btn btn-primary btn-lg") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

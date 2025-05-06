@@ -1,0 +1,149 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center py-5 mb-5 rounded-3 bg-opacity-10">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">Find Your Dream Career</h1>
+                <p class="lead mb-4">Connect with top employers and discover opportunities that match your skills and aspirations.</p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="{{ url_for('jobs.index') }}" class="btn btn-primary btn-lg px-4 gap-3">Browse Jobs</a>
+                    {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-outline-secondary btn-lg px-4">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Search Form -->
+<div class="container mb-5">
+    <div class="card search-form">
+        <div class="card-body">
+            <h5 class="card-title text-center mb-4">Quick Job Search</h5>
+            <form action="{{ url_for('jobs.index') }}" method="GET">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" name="keyword" placeholder="Job title, keywords or company">
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="location" placeholder="Location">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Jobs Section -->
+<section class="mb-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Recently Posted Jobs</h2>
+        
+        <div class="row">
+            {% if recent_jobs %}
+                {% for job in recent_jobs %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 job-card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ job.title }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ job.company }}</h6>
+                                <p class="card-text mb-2">
+                                    <i class="fas fa-map-marker-alt me-2"></i>{{ job.location }}
+                                    {% if job.is_remote %}
+                                        <span class="badge bg-info ms-2">Remote</span>
+                                    {% endif %}
+                                </p>
+                                <p class="card-text mb-2">
+                                    <i class="fas fa-briefcase me-2"></i>{{ job.job_type }}
+                                </p>
+                                <p class="card-text">
+                                    {{ job.description|truncate(100) }}
+                                </p>
+                            </div>
+                            <div class="card-footer bg-transparent border-top-0">
+                                <a href="{{ url_for('jobs.show', job_id=job.id) }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                                <small class="text-muted float-end">Posted {{ job.created_at.strftime('%b %d, %Y') }}</small>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center">
+                    <p>No jobs available at the moment. Please check back later.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('jobs.index') }}" class="btn btn-outline-primary">View All Jobs</a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light rounded-3">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Choose CareerConnect?</h2>
+        
+        <div class="row g-4 py-3 row-cols-1 row-cols-lg-3">
+            <div class="col d-flex align-items-start">
+                <div class="feature-icon bg-primary bg-gradient me-3 d-flex align-items-center justify-content-center">
+                    <i class="fas fa-search fa-2x text-white"></i>
+                </div>
+                <div>
+                    <h3>Find the Perfect Job</h3>
+                    <p>Use our advanced search tools to filter jobs by location, industry, experience level, and more.</p>
+                </div>
+            </div>
+            
+            <div class="col d-flex align-items-start">
+                <div class="feature-icon bg-primary bg-gradient me-3 d-flex align-items-center justify-content-center">
+                    <i class="fas fa-file-alt fa-2x text-white"></i>
+                </div>
+                <div>
+                    <h3>One-Click Applications</h3>
+                    <p>Apply to jobs with your profile information and resume with just a few clicks.</p>
+                </div>
+            </div>
+            
+            <div class="col d-flex align-items-start">
+                <div class="feature-icon bg-primary bg-gradient me-3 d-flex align-items-center justify-content-center">
+                    <i class="fas fa-building fa-2x text-white"></i>
+                </div>
+                <div>
+                    <h3>For Employers</h3>
+                    <p>Post job listings, review applications, and connect with qualified candidates.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 text-center container">
+    <div class="row py-lg-5">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <h2 class="fw-light">Ready to take the next step in your career?</h2>
+            <p class="lead text-muted">Join thousands of professionals who have found their dream jobs through CareerConnect.</p>
+            <p>
+                {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary my-2">Create an Account</a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-secondary my-2">Sign In</a>
+                {% else %}
+                    <a href="{{ url_for('jobs.index') }}" class="btn btn-primary my-2">Browse All Jobs</a>
+                    {% if current_user.is_employer() %}
+                        <a href="{{ url_for('jobs.create') }}" class="btn btn-secondary my-2">Post a Job</a>
+                    {% endif %}
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

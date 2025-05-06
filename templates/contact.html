@@ -1,0 +1,180 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1 class="mb-4">Contact Us</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Send us a Message</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('contact.index') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        {% if form.name.errors %}
+                            {{ form.name(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.name(class="form-control") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {% if form.email.errors %}
+                            {{ form.email(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.email(class="form-control") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.subject.label(class="form-label") }}
+                        {% if form.subject.errors %}
+                            {{ form.subject(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.subject.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.subject(class="form-control") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.message.label(class="form-label") }}
+                        {% if form.message.errors %}
+                            {{ form.message(class="form-control is-invalid", rows=6) }}
+                            <div class="invalid-feedback">
+                                {% for error in form.message.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.message(class="form-control", rows=6) }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-secondary">
+                <h4 class="mb-0">Contact Information</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h5><i class="fas fa-envelope me-2"></i>Email</h5>
+                    <p>support@careerconnect.com</p>
+                </div>
+                <div class="mb-3">
+                    <h5><i class="fas fa-phone me-2"></i>Phone</h5>
+                    <p>+1 (555) 123-4567</p>
+                </div>
+                <div>
+                    <h5><i class="fas fa-map-marker-alt me-2"></i>Location</h5>
+                    <p>
+                        123 Recruitment Street<br>
+                        San Francisco, CA 94103<br>
+                        United States
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary">
+                <h4 class="mb-0">Business Hours</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Monday - Friday:</strong> 9:00 AM - 6:00 PM</p>
+                <p><strong>Saturday:</strong> 10:00 AM - 2:00 PM</p>
+                <p><strong>Sunday:</strong> Closed</p>
+                <p class="text-muted small">All times are in Pacific Time (PT)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FAQ Section -->
+<div class="card mt-5">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Frequently Asked Questions</h4>
+    </div>
+    <div class="card-body">
+        <div class="accordion" id="faqAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        How do I create an account?
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        To create an account, click on the "Register" button in the navigation bar. You'll need to provide a username, email address, and password. You can sign up as either a job seeker or an employer.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        How do I post a job listing?
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        First, you need to create an employer account. Once logged in, you'll have access to your employer dashboard. From there, click on "Post a Job" and fill out the job posting form with all the necessary details.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        How do I apply for a job?
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Browse our job listings and click on any job you're interested in to view details. On the job page, click the "Apply Now" button. You'll need to upload your resume and optionally include a cover letter with your application.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        How can I update my profile?
+                    </button>
+                </h2>
+                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        After logging in, access your dashboard (either candidate or employer). Click on "Edit Profile" to update your information, add skills or experience, or upload a new resume.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

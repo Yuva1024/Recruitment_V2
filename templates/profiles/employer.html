@@ -1,0 +1,236 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1 class="mb-4">Employer Dashboard</h1>
+
+<div class="row">
+    <!-- Company Profile Information -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Company Profile</h5>
+            </div>
+            <div class="card-body">
+                {% if profile and profile.company_name %}
+                    {% if profile.logo_path %}
+                        <div class="text-center mb-3">
+                            <img src="{{ url_for('static', filename=profile.logo_path) }}" alt="{{ profile.company_name }} Logo" class="img-fluid" style="max-height: 100px;">
+                        </div>
+                    {% endif %}
+                    
+                    <h3>{{ profile.company_name }}</h3>
+                    
+                    {% if profile.industry %}
+                        <p class="text-muted mb-3">{{ profile.industry }}</p>
+                    {% endif %}
+                    
+                    {% if profile.location %}
+                        <p><i class="fas fa-map-marker-alt me-2"></i>{{ profile.location }}</p>
+                    {% endif %}
+                    
+                    {% if profile.company_website %}
+                        <p><i class="fas fa-globe me-2"></i><a href="{{ profile.company_website }}" target="_blank">{{ profile.company_website }}</a></p>
+                    {% endif %}
+                    
+                    {% if profile.contact_email %}
+                        <p><i class="fas fa-envelope me-2"></i>{{ profile.contact_email }}</p>
+                    {% endif %}
+                    
+                    {% if profile.contact_phone %}
+                        <p><i class="fas fa-phone me-2"></i>{{ profile.contact_phone }}</p>
+                    {% endif %}
+                    
+                    {% if profile.company_size %}
+                        <p><i class="fas fa-users me-2"></i>{{ profile.company_size }} employees</p>
+                    {% endif %}
+                    
+                    {% if profile.founded_year %}
+                        <p><i class="fas fa-calendar-alt me-2"></i>Founded in {{ profile.founded_year }}</p>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-warning">
+                        <p>Your company profile is incomplete. Please complete your profile to attract better candidates.</p>
+                    </div>
+                {% endif %}
+                
+                <div class="d-grid mt-3">
+                    <a href="{{ url_for('profiles.edit_employer_profile') }}" class="btn btn-primary">
+                        {% if profile and profile.company_name %}
+                            <i class="fas fa-edit me-2"></i>Edit Company Profile
+                        {% else %}
+                            <i class="fas fa-plus-circle me-2"></i>Complete Company Profile
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Company Description -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Company Description</h5>
+            </div>
+            <div class="card-body">
+                {% if profile and profile.company_description %}
+                    {{ profile.company_description|nl2br }}
+                {% else %}
+                    <p class="text-muted">No company description provided. Add a description to tell potential candidates about your company.</p>
+                    <a href="{{ url_for('profiles.edit_employer_profile') }}" class="btn btn-outline-primary">
+                        Add Company Description
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Posted Jobs -->
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Your Job Listings</h5>
+        <a href="{{ url_for('jobs.create') }}" class="btn btn-light btn-sm">
+            <i class="fas fa-plus-circle me-1"></i>Post New Job
+        </a>
+    </div>
+    <div class="card-body">
+        {% if jobs %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Location</th>
+                            <th>Posted On</th>
+                            <th>Applications</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for job in jobs %}
+                            <tr>
+                                <td>{{ job.title }}</td>
+                                <td>
+                                    {{ job.location }}
+                                    {% if job.is_remote %}
+                                        <span class="badge bg-info">Remote</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ job.created_at.strftime('%b %d, %Y') }}</td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        {{ job_applications.get(job.id, 0) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if job.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('jobs.show', job_id=job.id) }}" class="btn btn-sm btn-outline-primary" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('jobs.edit', job_id=job.id) }}" class="btn btn-sm btn-outline-warning" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ url_for('applications.job_applications', job_id=job.id) }}" class="btn btn-sm btn-outline-info" title="View Applications">
+                                            <i class="fas fa-users"></i>
+                                        </a>
+                                        <form action="{{ url_for('jobs.toggle_status', job_id=job.id) }}" method="POST" class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary" title="Toggle Status">
+                                                {% if job.is_active %}
+                                                    <i class="fas fa-pause"></i>
+                                                {% else %}
+                                                    <i class="fas fa-play"></i>
+                                                {% endif %}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <p>You haven't posted any jobs yet. Create your first job listing to start receiving applications!</p>
+                <a href="{{ url_for('jobs.create') }}" class="btn btn-primary mt-2">
+                    <i class="fas fa-plus-circle me-2"></i>Post a Job
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Quick Stats -->
+{% if jobs %}
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Total Jobs</h6>
+                        <h2>{{ jobs|length }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-briefcase fa-3x text-muted"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Active Jobs</h6>
+                        <h2>{{ jobs|selectattr('is_active', 'equalto', true)|list|length }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-check-circle fa-3x text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Total Applications</h6>
+                        <h2>{{ job_applications.values()|sum }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-file-alt fa-3x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Call to Action -->
+<div class="card text-center mb-4">
+    <div class="card-body py-4">
+        <h5 class="card-title mb-3">Ready to find the perfect candidate?</h5>
+        <p class="card-text">Post a new job listing and reach qualified candidates matching your requirements.</p>
+        <a href="{{ url_for('jobs.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-2"></i>Post a New Job
+        </a>
+    </div>
+</div>
+{% endblock %}

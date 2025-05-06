@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('admin.contact_messages') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Messages
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h2 class="mb-0">Message Details</h2>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h5>Sender Information</h5>
+                <p><strong>Name:</strong> {{ message.name }}</p>
+                <p><strong>Email:</strong> <a href="mailto:{{ message.email }}">{{ message.email }}</a></p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <p><strong>Date:</strong> {{ message.created_at.strftime('%b %d, %Y at %H:%M') }}</p>
+                <p>
+                    <strong>Status:</strong>
+                    {% if message.is_read %}
+                        <span class="badge bg-secondary">Read</span>
+                    {% else %}
+                        <span class="badge bg-warning">Unread</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        
+        <hr>
+        
+        <div class="mb-4">
+            <h5>Subject</h5>
+            <p class="fs-4">{{ message.subject }}</p>
+        </div>
+        
+        <div class="mb-4">
+            <h5>Message</h5>
+            <div class="card">
+                <div class="card-body">
+                    {{ message.message|nl2br }}
+                </div>
+            </div>
+        </div>
+        
+        <hr>
+        
+        <div class="d-flex justify-content-between">
+            <a href="mailto:{{ message.email }}?subject=RE: {{ message.subject }}" class="btn btn-primary">
+                <i class="fas fa-reply me-2"></i>Reply by Email
+            </a>
+            
+            <a href="{{ url_for('admin.contact_messages') }}" class="btn btn-secondary">
+                Back to Messages
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

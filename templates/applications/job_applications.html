@@ -1,0 +1,180 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('jobs.show', job_id=job.id) }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Job
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h2 class="mb-0">Applications for: {{ job.title }}</h2>
+    </div>
+    <div class="card-body">
+        <div class="mb-4">
+            <h5>Job Details</h5>
+            <div class="row">
+                <div class="col-md-8">
+                    <p class="mb-1"><strong>Company:</strong> {{ job.company }}</p>
+                    <p class="mb-1"><strong>Location:</strong> {{ job.location }}
+                        {% if job.is_remote %}
+                            <span class="badge bg-info ms-1">Remote</span>
+                        {% endif %}
+                    </p>
+                    <p class="mb-1"><strong>Type:</strong> {{ job.job_type }}</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <p class="mb-1"><strong>Posted:</strong> {{ job.created_at.strftime('%b %d, %Y') }}</p>
+                    <p class="mb-1"><strong>Status:</strong> 
+                        {% if job.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <hr>
+        
+        <h5>Applications ({{ applications|length }})</h5>
+        
+        {% if applications %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Applicant</th>
+                            <th>Applied On</th>
+                            <th>Status</th>
+                            <th>Resume</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applications %}
+                            <tr>
+                                <td>
+                                    {% if profiles[application.id] %}
+                                        {{ profiles[application.id].first_name }} {{ profiles[application.id].last_name }}
+                                        {% if profiles[application.id].professional_title %}
+                                            <br><small class="text-muted">{{ profiles[application.id].professional_title }}</small>
+                                        {% endif %}
+                                    {% else %}
+                                        Applicant #{{ application.candidate_id }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ application.created_at.strftime('%b %d, %Y') }}</td>
+                                <td>
+                                    <span class="badge status-{{ application.status }}">
+                                        {{ application.status.capitalize() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if application.resume_path %}
+                                        <a href="{{ url_for('static', filename=application.resume_path) }}" class="btn btn-sm btn-outline-secondary" target="_blank">
+                                            <i class="fas fa-file-alt"></i>
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('applications.show', application_id=application.id) }}" class="btn btn-sm btn-outline-primary" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('profiles.view_profile', user_id=application.candidate_id) }}" class="btn btn-sm btn-outline-info" title="View Profile">
+                                            <i class="fas fa-user"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Status Filter Buttons -->
+            <div class="mt-4">
+                <h6>Filter by Status:</h6>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary filter-btn active" data-filter="all">All</button>
+                    <button type="button" class="btn btn-sm btn-outline-warning filter-btn" data-filter="pending">Pending</button>
+                    <button type="button" class="btn btn-sm btn-outline-info filter-btn" data-filter="reviewed">Reviewed</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="interviewed">Interviewed</button>
+                    <button type="button" class="btn btn-sm btn-outline-success filter-btn" data-filter="offered">Offered</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger filter-btn" data-filter="rejected">Rejected</button>
+                </div>
+            </div>
+            
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const filterButtons = document.querySelectorAll('.filter-btn');
+                    const tableRows = document.querySelectorAll('tbody tr');
+                    
+                    filterButtons.forEach(button => {
+                        button.addEventListener('click', function() {
+                            // Remove active class from all buttons
+                            filterButtons.forEach(btn => btn.classList.remove('active'));
+                            
+                            // Add active class to clicked button
+                            this.classList.add('active');
+                            
+                            const filter = this.getAttribute('data-filter');
+                            
+                            // Show/hide rows based on filter
+                            tableRows.forEach(row => {
+                                if (filter === 'all') {
+                                    row.style.display = '';
+                                } else {
+                                    const statusBadge = row.querySelector('.badge');
+                                    const status = statusBadge.classList.contains(`status-${filter}`);
+                                    row.style.display = status ? '' : 'none';
+                                }
+                            });
+                        });
+                    });
+                });
+            </script>
+        {% else %}
+            <div class="alert alert-info">
+                <p>No applications have been submitted for this job yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Application Status Legend -->
+<div class="card mt-4">
+    <div class="card-header bg-secondary">
+        <h5 class="mb-0">Application Status Guide</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 mb-2">
+                <span class="badge status-pending me-2">Pending</span>
+                Application submitted and awaiting review
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="badge status-reviewed me-2">Reviewed</span>
+                Application has been reviewed
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="badge status-interviewed me-2">Interviewed</span>
+                Candidate has been interviewed
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="badge status-offered me-2">Offered</span>
+                Job offer extended to candidate
+            </div>
+            <div class="col-md-4 mb-2">
+                <span class="badge status-rejected me-2">Rejected</span>
+                Application not selected for this position
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

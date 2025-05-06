@@ -1,0 +1,279 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1 class="mb-4">Admin Dashboard</h1>
+
+<!-- Stats Overview -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Total Users</h6>
+                        <h2>{{ user_count }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-users fa-3x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{{ url_for('admin.users') }}" class="text-decoration-none">View All Users <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Job Listings</h6>
+                        <h2>{{ job_count }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-briefcase fa-3x text-success"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{{ url_for('admin.jobs') }}" class="text-decoration-none">View All Jobs <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Applications</h6>
+                        <h2>{{ application_count }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-file-alt fa-3x text-info"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{{ url_for('admin.applications') }}" class="text-decoration-none">View All Applications <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Messages</h6>
+                        <h2>{{ message_count }}</h2>
+                        {% if unread_messages > 0 %}
+                            <span class="badge bg-danger">{{ unread_messages }} unread</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <i class="fas fa-envelope fa-3x text-warning"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{{ url_for('admin.contact_messages') }}" class="text-decoration-none">View All Messages <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Users -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Users</h5>
+                <a href="{{ url_for('admin.users') }}" class="btn btn-sm btn-light">View All</a>
+            </div>
+            <div class="card-body">
+                {% if recent_users %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Joined</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in recent_users %}
+                                    <tr>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>
+                                            <span class="badge {% if user.role == 'admin' %}bg-danger{% elif user.role == 'employer' %}bg-primary{% else %}bg-secondary{% endif %}">
+                                                {{ user.role }}
+                                            </span>
+                                        </td>
+                                        <td>{{ user.created_at.strftime('%b %d, %Y') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No users registered yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Jobs -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Jobs</h5>
+                <a href="{{ url_for('admin.jobs') }}" class="btn btn-sm btn-light">View All</a>
+            </div>
+            <div class="card-body">
+                {% if recent_jobs %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Company</th>
+                                    <th>Status</th>
+                                    <th>Posted</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job in recent_jobs %}
+                                    <tr>
+                                        <td>{{ job.title }}</td>
+                                        <td>{{ job.company }}</td>
+                                        <td>
+                                            {% if job.is_active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ job.created_at.strftime('%b %d, %Y') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No jobs posted yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Applications -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Applications</h5>
+                <a href="{{ url_for('admin.applications') }}" class="btn btn-sm btn-light">View All</a>
+            </div>
+            <div class="card-body">
+                {% if recent_applications %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Job</th>
+                                    <th>Applicant</th>
+                                    <th>Status</th>
+                                    <th>Applied</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for application in recent_applications %}
+                                    <tr>
+                                        <td>{{ application.job.title }}</td>
+                                        <td>{{ application.candidate.username }}</td>
+                                        <td>
+                                            <span class="badge status-{{ application.status }}">
+                                                {{ application.status }}
+                                            </span>
+                                        </td>
+                                        <td>{{ application.created_at.strftime('%b %d, %Y') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No applications submitted yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Unread Messages -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    Unread Messages
+                    {% if unread_messages > 0 %}
+                        <span class="badge bg-danger ms-2">{{ unread_messages }}</span>
+                    {% endif %}
+                </h5>
+                <a href="{{ url_for('admin.contact_messages') }}" class="btn btn-sm btn-light">View All</a>
+            </div>
+            <div class="card-body">
+                {% if unread_messages > 0 %}
+                    <div class="alert alert-warning">
+                        <p>You have {{ unread_messages }} unread message(s). Please check your inbox.</p>
+                        <a href="{{ url_for('admin.contact_messages', unread_only='true') }}" class="btn btn-sm btn-primary">View Unread Messages</a>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No unread messages.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card mb-4">
+    <div class="card-header bg-secondary">
+        <h5 class="mb-0">Quick Actions</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <a href="{{ url_for('admin.users') }}" class="btn btn-primary w-100 py-3">
+                    <i class="fas fa-users fa-2x mb-2"></i><br>
+                    Manage Users
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="{{ url_for('admin.jobs') }}" class="btn btn-success w-100 py-3">
+                    <i class="fas fa-briefcase fa-2x mb-2"></i><br>
+                    Manage Jobs
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="{{ url_for('admin.applications') }}" class="btn btn-info w-100 py-3">
+                    <i class="fas fa-file-alt fa-2x mb-2"></i><br>
+                    Manage Applications
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="{{ url_for('admin.contact_messages') }}" class="btn btn-warning w-100 py-3">
+                    <i class="fas fa-envelope fa-2x mb-2"></i><br>
+                    Manage Messages
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

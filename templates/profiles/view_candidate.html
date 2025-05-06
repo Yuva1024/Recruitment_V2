@@ -1,0 +1,149 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Home
+    </a>
+</div>
+
+<div class="row">
+    <!-- Profile Header -->
+    <div class="col-md-12 mb-4">
+        <div class="card profile-header">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h1>{{ profile.first_name }} {{ profile.last_name }}</h1>
+                        {% if profile.professional_title %}
+                            <h4 class="text-muted">{{ profile.professional_title }}</h4>
+                        {% endif %}
+                        
+                        {% if profile.location %}
+                            <p><i class="fas fa-map-marker-alt me-2"></i>{{ profile.address }}</p>
+                        {% endif %}
+                        
+                        {% if profile.phone %}
+                            <p><i class="fas fa-phone me-2"></i>{{ profile.phone }}</p>
+                        {% endif %}
+                        
+                        <p><i class="fas fa-envelope me-2"></i>{{ user.email }}</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        {% if current_user.is_employer() %}
+                            <a href="mailto:{{ user.email }}" class="btn btn-primary">
+                                <i class="fas fa-envelope me-2"></i>Contact
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Summary Section -->
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Professional Summary</h5>
+            </div>
+            <div class="card-body">
+                {% if profile.summary %}
+                    {{ profile.summary|nl2br }}
+                {% else %}
+                    <p class="text-muted">No professional summary provided.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Skills Section -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Skills</h5>
+            </div>
+            <div class="card-body">
+                {% if profile.skills %}
+                    {{ profile.skills|nl2br }}
+                {% else %}
+                    <p class="text-muted">No skills listed.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Resume Section -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Resume</h5>
+            </div>
+            <div class="card-body">
+                {% if profile.resume_path %}
+                    <div class="mb-3">
+                        <a href="{{ url_for('static', filename=profile.resume_path) }}" class="btn btn-primary" target="_blank">
+                            <i class="fas fa-file-alt me-2"></i>View Resume
+                        </a>
+                        
+                        <a href="{{ url_for('static', filename=profile.resume_path) }}" class="btn btn-outline-secondary ms-2" download>
+                            <i class="fas fa-download me-2"></i>Download
+                        </a>
+                    </div>
+                    
+                    {% if profile.resume_path.endswith('.pdf') %}
+                        <iframe src="{{ url_for('static', filename=profile.resume_path) }}" class="resume-preview"></iframe>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted">No resume uploaded.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Experience Section -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Work Experience</h5>
+            </div>
+            <div class="card-body">
+                {% if profile.experience %}
+                    {{ profile.experience|nl2br }}
+                {% else %}
+                    <p class="text-muted">No work experience listed.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Education Section -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Education</h5>
+            </div>
+            <div class="card-body">
+                {% if profile.education %}
+                    {{ profile.education|nl2br }}
+                {% else %}
+                    <p class="text-muted">No education history listed.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if current_user.is_employer() %}
+<!-- For Employers: CTA to view all jobs -->
+<div class="card text-center mt-4">
+    <div class="card-body py-4">
+        <h5 class="card-title">Looking for candidates like {{ profile.first_name }}?</h5>
+        <p class="card-text">Post a job to find more qualified candidates.</p>
+        <a href="{{ url_for('jobs.create') }}" class="btn btn-primary">Post a Job</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

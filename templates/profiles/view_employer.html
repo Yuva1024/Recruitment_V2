@@ -1,0 +1,159 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Home
+    </a>
+</div>
+
+<div class="row">
+    <!-- Company Profile Header -->
+    <div class="col-md-12 mb-4">
+        <div class="card profile-header">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2 text-center mb-3 mb-md-0">
+                        {% if profile.logo_path %}
+                            <img src="{{ url_for('static', filename=profile.logo_path) }}" alt="{{ profile.company_name }} Logo" class="img-fluid" style="max-height: 120px;">
+                        {% else %}
+                            <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="width: 120px; height: 120px; margin: 0 auto;">
+                                <i class="fas fa-building fa-3x text-light"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-7">
+                        <h1>{{ profile.company_name }}</h1>
+                        {% if profile.industry %}
+                            <h5 class="text-muted">{{ profile.industry }}</h5>
+                        {% endif %}
+                        
+                        {% if profile.location %}
+                            <p><i class="fas fa-map-marker-alt me-2"></i>{{ profile.location }}</p>
+                        {% endif %}
+                        
+                        {% if profile.company_size %}
+                            <p><i class="fas fa-users me-2"></i>{{ profile.company_size }} employees</p>
+                        {% endif %}
+                        
+                        {% if profile.founded_year %}
+                            <p><i class="fas fa-calendar-alt me-2"></i>Founded in {{ profile.founded_year }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3 text-md-end">
+                        {% if profile.company_website %}
+                            <a href="{{ profile.company_website }}" class="btn btn-outline-primary mb-2" target="_blank">
+                                <i class="fas fa-globe me-2"></i>Visit Website
+                            </a>
+                        {% endif %}
+                        
+                        <a href="mailto:{{ profile.contact_email or user.email }}" class="btn btn-primary">
+                            <i class="fas fa-envelope me-2"></i>Contact
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Company Description -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">About {{ profile.company_name }}</h5>
+    </div>
+    <div class="card-body">
+        {% if profile.company_description %}
+            {{ profile.company_description|nl2br }}
+        {% else %}
+            <p class="text-muted">No company description provided.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Contact Information -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Contact Information</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {% if profile.contact_email %}
+                <div class="col-md-4 mb-3">
+                    <h6><i class="fas fa-envelope me-2"></i>Email</h6>
+                    <p><a href="mailto:{{ profile.contact_email }}">{{ profile.contact_email }}</a></p>
+                </div>
+            {% endif %}
+            
+            {% if profile.contact_phone %}
+                <div class="col-md-4 mb-3">
+                    <h6><i class="fas fa-phone me-2"></i>Phone</h6>
+                    <p>{{ profile.contact_phone }}</p>
+                </div>
+            {% endif %}
+            
+            {% if profile.location %}
+                <div class="col-md-4 mb-3">
+                    <h6><i class="fas fa-map-marker-alt me-2"></i>Address</h6>
+                    <p>{{ profile.location }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Open Jobs -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Open Positions at {{ profile.company_name }}</h5>
+    </div>
+    <div class="card-body">
+        {% if jobs %}
+            <div class="row">
+                {% for job in jobs %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 job-card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ job.title }}</h5>
+                                <p class="card-text mb-2">
+                                    <i class="fas fa-map-marker-alt me-2"></i>{{ job.location }}
+                                    {% if job.is_remote %}
+                                        <span class="badge bg-info ms-2">Remote</span>
+                                    {% endif %}
+                                </p>
+                                <p class="card-text mb-2">
+                                    <i class="fas fa-briefcase me-2"></i>{{ job.job_type }}
+                                </p>
+                                <p class="card-text">{{ job.description|truncate(100) }}</p>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <a href="{{ url_for('jobs.show', job_id=job.id) }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                                <small class="text-muted float-end">Posted {{ job.created_at.strftime('%b %d, %Y') }}</small>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <p>{{ profile.company_name }} doesn't have any active job listings at the moment. Please check back later.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if current_user.is_candidate() %}
+<!-- For Candidates: CTA -->
+<div class="card text-center mt-4">
+    <div class="card-body py-4">
+        <h5 class="card-title">Interested in working at {{ profile.company_name }}?</h5>
+        <p class="card-text">Explore all available positions and submit your application.</p>
+        {% if jobs %}
+            <a href="{{ url_for('jobs.index', keyword=profile.company_name) }}" class="btn btn-primary">View All Open Positions</a>
+        {% else %}
+            <a href="{{ url_for('jobs.index') }}" class="btn btn-primary">Browse All Jobs</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

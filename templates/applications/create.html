@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('jobs.show', job_id=job.id) }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Job
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h2 class="mb-0">Apply for: {{ job.title }}</h2>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h4>{{ job.company }}</h4>
+                <p class="mb-2">
+                    <i class="fas fa-map-marker-alt me-2"></i>{{ job.location }}
+                    {% if job.is_remote %}
+                        <span class="badge bg-info ms-2">Remote</span>
+                    {% endif %}
+                </p>
+                <p class="mb-2">
+                    <i class="fas fa-briefcase me-2"></i>{{ job.job_type }}
+                </p>
+                {% if job.salary_range %}
+                    <p class="mb-0">
+                        <i class="fas fa-money-bill-wave me-2"></i>{{ job.salary_range }}
+                    </p>
+                {% endif %}
+            </div>
+            <div class="col-md-4 text-md-end">
+                <p class="mb-0">
+                    <span class="text-muted">Posted:</span> {{ job.created_at.strftime('%b %d, %Y') }}
+                </p>
+            </div>
+        </div>
+        
+        <hr>
+        
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            
+            <div class="mb-4">
+                {{ form.cover_letter.label(class="form-label") }}
+                {% if form.cover_letter.errors %}
+                    {{ form.cover_letter(class="form-control is-invalid", rows=10) }}
+                    <div class="invalid-feedback">
+                        {% for error in form.cover_letter.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.cover_letter(class="form-control", rows=10) }}
+                {% endif %}
+                <small class="form-text text-muted">
+                    Explain why you're interested in this position and how your skills and experience make you a good fit.
+                </small>
+            </div>
+            
+            <div class="mb-4">
+                {{ form.resume.label(class="form-label") }}
+                <div class="input-group">
+                    {{ form.resume(class="form-control custom-file-input") }}
+                </div>
+                {% if form.resume.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.resume.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <small class="form-text text-muted">
+                    Upload your resume (PDF, DOC, DOCX, or TXT files only, max 16MB).
+                    {% if current_user.candidate_profile and current_user.candidate_profile.resume_path %}
+                        <br>If you don't upload a new resume, we'll use the one from your profile.
+                    {% else %}
+                        <br><span class="text-danger">You don't have a resume in your profile yet. Please upload one now.</span>
+                    {% endif %}
+                </small>
+            </div>
+            
+            <div class="d-grid gap-2">
+                {{ form.submit(class="btn btn-primary btn-lg") }}
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-secondary">
+        <h4 class="mb-0">Job Description</h4>
+    </div>
+    <div class="card-body">
+        <div class="job-description mb-4">
+            {{ job.description|safe|nl2br }}
+        </div>
+        
+        <h5>Requirements</h5>
+        <div class="job-requirements">
+            {{ job.requirements|safe|nl2br }}
+        </div>
+    </div>
+</div>
+{% endblock %}
