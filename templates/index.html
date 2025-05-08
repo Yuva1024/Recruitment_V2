@@ -2,17 +2,59 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section text-center py-5 mb-5 rounded-3 bg-opacity-10">
+<section class="hero-section text-center py-5 mb-5 rounded-3">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <h1 class="display-4 fw-bold mb-4">Find Your Dream Career</h1>
-                <p class="lead mb-4">Connect with top employers and discover opportunities that match your skills and aspirations.</p>
-                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                    <a href="{{ url_for('jobs.index') }}" class="btn btn-primary btn-lg px-4 gap-3">Browse Jobs</a>
+            <div class="col-lg-10">
+                <span class="badge bg-primary bg-opacity-25 text-primary mb-3 px-3 py-2 rounded-pill">Career Opportunities Await</span>
+                <h1 class="display-3 fw-bold mb-4">Find Your Dream Career</h1>
+                <p class="lead mb-5 text-muted px-lg-5 mx-lg-5">Connect with top employers and discover opportunities that match your skills and aspirations. Thousands of jobs are waiting for talented professionals like you.</p>
+                
+                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center mb-5">
+                    <a href="{{ url_for('jobs.index') }}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">
+                        <i class="fas fa-search me-2"></i>Browse Jobs
+                    </a>
                     {% if not current_user.is_authenticated %}
-                        <a href="{{ url_for('auth.register') }}" class="btn btn-outline-secondary btn-lg px-4">Sign Up</a>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill">
+                            <i class="fas fa-user-plus me-2"></i>Sign Up
+                        </a>
                     {% endif %}
+                </div>
+                
+                <div class="row mt-5 pt-4 text-start">
+                    <div class="col-md-4 mb-4 mb-md-0">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                                <i class="fas fa-briefcase fs-4 text-primary"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h5 class="mb-0 fw-bold">10,000+</h5>
+                                <p class="mb-0 text-muted">Jobs Available</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4 mb-md-0">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                                <i class="fas fa-building fs-4 text-primary"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h5 class="mb-0 fw-bold">1,200+</h5>
+                                <p class="mb-0 text-muted">Companies</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                                <i class="fas fa-user-tie fs-4 text-primary"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h5 class="mb-0 fw-bold">50,000+</h5>
+                                <p class="mb-0 text-muted">Candidates</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -22,18 +64,53 @@
 <!-- Quick Search Form -->
 <div class="container mb-5">
     <div class="card search-form">
-        <div class="card-body">
-            <h5 class="card-title text-center mb-4">Quick Job Search</h5>
+        <div class="card-body p-4">
+            <div class="text-center mb-4">
+                <h4 class="fw-bold">Find Your Perfect Job</h4>
+                <p class="text-muted">Search thousands of jobs from top companies</p>
+            </div>
             <form action="{{ url_for('jobs.index') }}" method="GET">
                 <div class="row g-3">
                     <div class="col-md-5">
-                        <input type="text" class="form-control" name="keyword" placeholder="Job title, keywords or company">
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0">
+                                <i class="fas fa-search text-primary"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0 ps-0" name="keyword" placeholder="Job title, skills or company">
+                        </div>
                     </div>
                     <div class="col-md-4">
-                        <input type="text" class="form-control" name="location" placeholder="Location">
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0">
+                                <i class="fas fa-map-marker-alt text-primary"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0 ps-0" name="location" placeholder="City or remote">
+                        </div>
                     </div>
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                        <button type="submit" class="btn btn-primary w-100 py-3">
+                            <i class="fas fa-search me-2"></i>Find Jobs
+                        </button>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12 text-center">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="remoteCheck" name="remote" value="1">
+                            <label class="form-check-label" for="remoteCheck">Remote Only</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="fullTimeCheck" name="job_type" value="full-time">
+                            <label class="form-check-label" for="fullTimeCheck">Full Time</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="partTimeCheck" name="job_type" value="part-time">
+                            <label class="form-check-label" for="partTimeCheck">Part Time</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="contractCheck" name="job_type" value="contract">
+                            <label class="form-check-label" for="contractCheck">Contract</label>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -51,32 +128,63 @@
                 {% for job in recent_jobs %}
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card h-100 job-card">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ job.title }}</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">{{ job.company }}</h6>
-                                <p class="card-text mb-2">
-                                    <i class="fas fa-map-marker-alt me-2"></i>{{ job.location }}
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    {% set job_type_classes = {
+                                        'full-time': 'bg-success',
+                                        'part-time': 'bg-info',
+                                        'contract': 'bg-warning text-dark',
+                                        'internship': 'bg-secondary',
+                                        'temporary': 'bg-danger'
+                                    } %}
+                                    <span class="badge {{ job_type_classes[job.job_type] if job.job_type in job_type_classes else 'bg-secondary' }} px-3 py-2 rounded-pill">{{ job.job_type|capitalize }}</span>
                                     {% if job.is_remote %}
-                                        <span class="badge bg-info ms-2">Remote</span>
+                                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">Remote</span>
                                     {% endif %}
+                                </div>
+
+                                <h5 class="card-title fw-bold">{{ job.title }}</h5>
+                                <div class="mb-3 d-flex align-items-center">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-2">
+                                        <i class="fas fa-building text-primary"></i>
+                                    </div>
+                                    <h6 class="card-subtitle mb-0 text-muted">{{ job.company }}</h6>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center text-muted mb-2">
+                                        <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                        <span>{{ job.location }}</span>
+                                    </div>
+                                    {% if job.salary_range %}
+                                    <div class="d-flex align-items-center text-muted">
+                                        <i class="fas fa-dollar-sign me-2 text-primary"></i>
+                                        <span>{{ job.salary_range }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <p class="card-text flex-grow-1">
+                                    {{ job.description|truncate(120) }}
                                 </p>
-                                <p class="card-text mb-2">
-                                    <i class="fas fa-briefcase me-2"></i>{{ job.job_type }}
-                                </p>
-                                <p class="card-text">
-                                    {{ job.description|truncate(100) }}
-                                </p>
-                            </div>
-                            <div class="card-footer bg-transparent border-top-0">
-                                <a href="{{ url_for('jobs.show', job_id=job.id) }}" class="btn btn-sm btn-outline-primary">View Details</a>
-                                <small class="text-muted float-end">Posted {{ job.created_at.strftime('%b %d, %Y') }}</small>
+                                
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <a href="{{ url_for('jobs.show', job_id=job.id) }}" class="btn btn-outline-primary rounded-pill px-4">
+                                        <i class="fas fa-eye me-1"></i> View
+                                    </a>
+                                    <small class="text-muted">{{ job.created_at.strftime('%b %d, %Y') }}</small>
+                                </div>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
             {% else %}
                 <div class="col-12 text-center">
-                    <p>No jobs available at the moment. Please check back later.</p>
+                    <div class="p-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h4>No jobs available at the moment</h4>
+                        <p class="text-muted">Please check back later for new opportunities.</p>
+                    </div>
                 </div>
             {% endif %}
         </div>
@@ -88,38 +196,90 @@
 </section>
 
 <!-- Features Section -->
-<section class="py-5 bg-light rounded-3">
+<section class="py-5 bg-light rounded-3 my-5">
     <div class="container">
-        <h2 class="text-center mb-5">Why Choose CareerConnect?</h2>
+        <div class="text-center mb-5">
+            <span class="badge bg-primary bg-opacity-25 text-primary mb-3 px-3 py-2 rounded-pill">Our Benefits</span>
+            <h2 class="display-5 fw-bold mb-3">Why Choose CareerConnect?</h2>
+            <p class="lead text-muted w-75 mx-auto">Discover how our platform can help you find your dream job or the perfect candidate</p>
+        </div>
         
-        <div class="row g-4 py-3 row-cols-1 row-cols-lg-3">
-            <div class="col d-flex align-items-start">
-                <div class="feature-icon bg-primary bg-gradient me-3 d-flex align-items-center justify-content-center">
-                    <i class="fas fa-search fa-2x text-white"></i>
-                </div>
-                <div>
-                    <h3>Find the Perfect Job</h3>
-                    <p>Use our advanced search tools to filter jobs by location, industry, experience level, and more.</p>
+        <div class="row g-5 py-3">
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary mx-auto mb-4">
+                            <i class="fas fa-search fa-2x text-white"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Smart Job Search</h4>
+                        <p class="text-muted mb-3">Advanced filters let you find positions matching your skills, location preferences, and career goals.</p>
+                        <ul class="list-unstyled text-start">
+                            <li class="mb-2 d-flex align-items-center">
+                                <i class="fas fa-check-circle text-primary me-2"></i>
+                                <span>Filter by experience level</span>
+                            </li>
+                            <li class="mb-2 d-flex align-items-center">
+                                <i class="fas fa-check-circle text-primary me-2"></i>
+                                <span>Search remote opportunities</span>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-primary me-2"></i>
+                                <span>Industry-specific jobs</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             
-            <div class="col d-flex align-items-start">
-                <div class="feature-icon bg-primary bg-gradient me-3 d-flex align-items-center justify-content-center">
-                    <i class="fas fa-file-alt fa-2x text-white"></i>
-                </div>
-                <div>
-                    <h3>One-Click Applications</h3>
-                    <p>Apply to jobs with your profile information and resume with just a few clicks.</p>
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary mx-auto mb-4">
+                            <i class="fas fa-file-alt fa-2x text-white"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Simple Applications</h4>
+                        <p class="text-muted mb-3">Apply to multiple jobs quickly with your saved profile information and resume.</p>
+                        <ul class="list-unstyled text-start">
+                            <li class="mb-2 d-flex align-items-center">
+                                <i class="fas fa-check-circle text-primary me-2"></i>
+                                <span>One-click applications</span>
+                            </li>
+                            <li class="mb-2 d-flex align-items-center">
+                                <i class="fas fa-check-circle text-primary me-2"></i>
+                                <span>Track application status</span>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-primary me-2"></i>
+                                <span>Resume storage and management</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             
-            <div class="col d-flex align-items-start">
-                <div class="feature-icon bg-primary bg-gradient me-3 d-flex align-items-center justify-content-center">
-                    <i class="fas fa-building fa-2x text-white"></i>
-                </div>
-                <div>
-                    <h3>For Employers</h3>
-                    <p>Post job listings, review applications, and connect with qualified candidates.</p>
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary mx-auto mb-4">
+                            <i class="fas fa-building fa-2x text-white"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">For Employers</h4>
+                        <p class="text-muted mb-3">Access a large talent pool and powerful tools to find the perfect candidates for your team.</p>
+                        <ul class="list-unstyled text-start">
+                            <li class="mb-2 d-flex align-items-center">
+                                <i class="fas fa-check-circle text-primary me-2"></i>
+                                <span>Post unlimited job listings</span>
+                            </li>
+                            <li class="mb-2 d-flex align-items-center">
+                                <i class="fas fa-check-circle text-primary me-2"></i>
+                                <span>Manage applicants efficiently</span>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-primary me-2"></i>
+                                <span>Company profile customization</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -127,22 +287,54 @@
 </section>
 
 <!-- Call to Action -->
-<section class="py-5 text-center container">
-    <div class="row py-lg-5">
-        <div class="col-lg-8 col-md-10 mx-auto">
-            <h2 class="fw-light">Ready to take the next step in your career?</h2>
-            <p class="lead text-muted">Join thousands of professionals who have found their dream jobs through CareerConnect.</p>
-            <p>
-                {% if not current_user.is_authenticated %}
-                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary my-2">Create an Account</a>
-                    <a href="{{ url_for('auth.login') }}" class="btn btn-secondary my-2">Sign In</a>
-                {% else %}
-                    <a href="{{ url_for('jobs.index') }}" class="btn btn-primary my-2">Browse All Jobs</a>
-                    {% if current_user.is_employer() %}
-                        <a href="{{ url_for('jobs.create') }}" class="btn btn-secondary my-2">Post a Job</a>
-                    {% endif %}
-                {% endif %}
-            </p>
+<section class="py-5 my-5">
+    <div class="container">
+        <div class="card border-0 rounded-4 overflow-hidden shadow">
+            <div class="row g-0">
+                <div class="col-md-6 p-5 d-flex flex-column justify-content-center">
+                    <h2 class="display-6 fw-bold mb-3">Ready to advance your career?</h2>
+                    <p class="lead mb-4">Join thousands of professionals who have found their dream jobs through CareerConnect.</p>
+                    <div class="d-grid gap-2 d-md-flex">
+                        {% if not current_user.is_authenticated %}
+                            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg px-4 py-3 rounded-pill">
+                                <i class="fas fa-user-plus me-2"></i>Create Account
+                            </a>
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg px-4 py-3 rounded-pill">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('jobs.index') }}" class="btn btn-primary btn-lg px-4 py-3 rounded-pill">
+                                <i class="fas fa-search me-2"></i>Browse Jobs
+                            </a>
+                            {% if current_user.is_employer() %}
+                                <a href="{{ url_for('jobs.create') }}" class="btn btn-outline-primary btn-lg px-4 py-3 rounded-pill">
+                                    <i class="fas fa-plus-circle me-2"></i>Post a Job
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6 bg-primary d-none d-md-block p-5" style="background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.8) 0%, rgba(var(--bs-primary-rgb), 0.4) 100%);">
+                    <div class="p-5 text-white">
+                        <div class="mb-4">
+                            <i class="fas fa-star fa-3x"></i>
+                        </div>
+                        <h3 class="fw-bold mb-4">Success Stories</h3>
+                        <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <p class="lead mb-3">"I found my dream job within two weeks of signing up! The platform is incredibly user-friendly."</p>
+                                    <p class="fst-italic">— Sarah J., Software Developer</p>
+                                </div>
+                                <div class="carousel-item">
+                                    <p class="lead mb-3">"As an employer, I've been able to connect with highly qualified candidates quickly and efficiently."</p>
+                                    <p class="fst-italic">— Mark T., HR Director</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
