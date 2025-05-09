@@ -84,53 +84,51 @@
             <div class="card-body">
                 {% if profile.resume_path %}
                     <div class="mb-3">
-                        <a href="{{ url_for('serve_upload', filename=profile.resume_path.replace('uploads/', '')) }}" class="btn btn-primary" target="_blank">
+                        <button type="button" class="btn btn-primary" id="view-resume-btn">
                             <i class="fas fa-file-alt me-2"></i>View Resume
-                        </a>
+                        </button>
                         
                         <a href="{{ url_for('serve_upload', filename=profile.resume_path.replace('uploads/', ''), download='true') }}" class="btn btn-outline-secondary ms-2">
                             <i class="fas fa-download me-2"></i>Download
                         </a>
                     </div>
                     
-                    {% if profile.resume_path.endswith('.pdf') %}
-                        <div class="resume-preview-container">
-                            <iframe src="{{ url_for('serve_upload', filename=profile.resume_path.replace('uploads/', '')) }}" 
-                                    class="resume-preview" 
+                    <!-- Resume Modal -->
+                    <div class="modal fade" id="resumeModal" tabindex="-1" aria-labelledby="resumeModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="resumeModalLabel">{{ profile.first_name }} {{ profile.last_name }}'s Resume</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body p-0" style="height: 80vh;">
+                            <object data="{{ url_for('serve_upload', filename=profile.resume_path.replace('uploads/', '')) }}" 
                                     type="application/pdf" 
                                     width="100%" 
-                                    height="500px"></iframe>
-                            <div class="resume-fallback-message text-center p-4 d-none">
-                                <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
-                                <p>PDF preview cannot be displayed in your browser. You can <a href="{{ url_for('serve_upload', filename=profile.resume_path.replace('uploads/', '')) }}" target="_blank">view it in a new tab</a> or <a href="{{ url_for('serve_upload', filename=profile.resume_path.replace('uploads/', ''), download='true') }}">download it</a>.</p>
-                            </div>
+                                    height="100%">
+                                <div class="text-center p-5">
+                                    <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                                    <p>Unable to display PDF. You can <a href="{{ url_for('serve_upload', filename=profile.resume_path.replace('uploads/', '')) }}" target="_blank" class="btn btn-primary btn-sm">view in new tab</a> or <a href="{{ url_for('serve_upload', filename=profile.resume_path.replace('uploads/', ''), download='true') }}" class="btn btn-outline-secondary btn-sm">download</a> it instead.</p>
+                                </div>
+                            </object>
+                          </div>
                         </div>
-                        <script>
-                            // Check if iframe loaded properly
-                            document.addEventListener('DOMContentLoaded', function() {
-                                const iframe = document.querySelector('.resume-preview');
-                                const fallback = document.querySelector('.resume-fallback-message');
-                                
-                                // Show fallback message if iframe fails to load
-                                iframe.onload = function() {
-                                    // If iframe content is empty or very small, assume it failed
-                                    setTimeout(function() {
-                                        if (iframe.contentDocument && 
-                                            (!iframe.contentDocument.body || 
-                                             iframe.contentDocument.body.innerHTML === "")) {
-                                            fallback.classList.remove('d-none');
-                                            iframe.classList.add('d-none');
-                                        }
-                                    }, 1000);
-                                };
-                                
-                                iframe.onerror = function() {
-                                    fallback.classList.remove('d-none');
-                                    iframe.classList.add('d-none');
-                                };
-                            });
-                        </script>
-                    {% endif %}
+                      </div>
+                    </div>
+                    
+                    <script>
+                      document.addEventListener('DOMContentLoaded', function() {
+                        const viewResumeBtn = document.getElementById('view-resume-btn');
+                        if (viewResumeBtn) {
+                          viewResumeBtn.addEventListener('click', function() {
+                            const resumeModal = new bootstrap.Modal(document.getElementById('resumeModal'));
+                            resumeModal.show();
+                          });
+                        }
+                      });
+                    </script>
+                    
+                    <!-- Resume embedded viewer removed in favor of modal solution above -->
                 {% else %}
                     <p class="text-muted">No resume uploaded.</p>
                 {% endif %}
