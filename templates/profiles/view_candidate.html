@@ -88,13 +88,48 @@
                             <i class="fas fa-file-alt me-2"></i>View Resume
                         </a>
                         
-                        <a href="{{ url_for('serve_upload', filename=profile.resume_path.replace('uploads/', '')) }}" class="btn btn-outline-secondary ms-2" download>
+                        <a href="{{ url_for('serve_upload', filename=profile.resume_path.replace('uploads/', ''), download='true') }}" class="btn btn-outline-secondary ms-2">
                             <i class="fas fa-download me-2"></i>Download
                         </a>
                     </div>
                     
                     {% if profile.resume_path.endswith('.pdf') %}
-                        <iframe src="{{ url_for('serve_upload', filename=profile.resume_path.replace('uploads/', '')) }}" class="resume-preview"></iframe>
+                        <div class="resume-preview-container">
+                            <iframe src="{{ url_for('serve_upload', filename=profile.resume_path.replace('uploads/', '')) }}" 
+                                    class="resume-preview" 
+                                    type="application/pdf" 
+                                    width="100%" 
+                                    height="500px"></iframe>
+                            <div class="resume-fallback-message text-center p-4 d-none">
+                                <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                                <p>PDF preview cannot be displayed in your browser. You can <a href="{{ url_for('serve_upload', filename=profile.resume_path.replace('uploads/', '')) }}" target="_blank">view it in a new tab</a> or <a href="{{ url_for('serve_upload', filename=profile.resume_path.replace('uploads/', ''), download='true') }}">download it</a>.</p>
+                            </div>
+                        </div>
+                        <script>
+                            // Check if iframe loaded properly
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const iframe = document.querySelector('.resume-preview');
+                                const fallback = document.querySelector('.resume-fallback-message');
+                                
+                                // Show fallback message if iframe fails to load
+                                iframe.onload = function() {
+                                    // If iframe content is empty or very small, assume it failed
+                                    setTimeout(function() {
+                                        if (iframe.contentDocument && 
+                                            (!iframe.contentDocument.body || 
+                                             iframe.contentDocument.body.innerHTML === "")) {
+                                            fallback.classList.remove('d-none');
+                                            iframe.classList.add('d-none');
+                                        }
+                                    }, 1000);
+                                };
+                                
+                                iframe.onerror = function() {
+                                    fallback.classList.remove('d-none');
+                                    iframe.classList.add('d-none');
+                                };
+                            });
+                        </script>
                     {% endif %}
                 {% else %}
                     <p class="text-muted">No resume uploaded.</p>

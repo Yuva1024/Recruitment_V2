@@ -57,11 +57,11 @@ def create_app():
     os.makedirs(os.path.join(app.static_folder, 'uploads', 'resumes'), exist_ok=True)
     os.makedirs(os.path.join(app.static_folder, 'uploads', 'logos'), exist_ok=True)
     
-    # Simple direct file serving route for resumes and uploaded files
+    # Serve uploaded files with proper content disposition
     @app.route('/uploads/<path:filename>')
     def serve_upload(filename):
-        from flask import send_from_directory, abort, current_app
-        import logging
+        from flask import send_from_directory, abort, current_app, request, Response
+        import mimetypes
         
         # Security check - only allow access to files in the uploads directory
         if '..' in filename:
@@ -79,14 +79,28 @@ def create_app():
         logging.info(f"File exists: {os.path.exists(file_path)}")
         
         try:
-            directory = os.path.dirname(os.path.join(current_app.static_folder, 'uploads', filename))
-            base_filename = os.path.basename(filename)
-            logging.info(f"Serving from directory: {directory}, file: {base_filename}")
-            
             if os.path.exists(file_path):
+                # Check if it's a PDF file
+                is_pdf = file_path.lower().endswith('.pdf')
+                
+                # Check if this is a download request (via the download parameter)
+                is_download = request.args.get('download', '').lower() in ('true', '1', 'yes')
+                
+                # Set content disposition based on parameters
+                if is_download:
+                    disposition = 'attachment'
+                else:
+                    # For PDFs in iframe context, force inline viewing
+                    disposition = 'inline'
+                
+                logging.info(f"Serving {filename} with disposition: {disposition}")
+                
+                # Let's handle PDFs and other documents with explicit content-disposition
                 return send_from_directory(
                     os.path.dirname(file_path),
-                    os.path.basename(file_path)
+                    os.path.basename(file_path),
+                    as_attachment=(disposition == 'attachment'),
+                    download_name=os.path.basename(filename) if disposition == 'attachment' else None
                 )
             else:
                 current_app.logger.error(f"File not found: {file_path}")
